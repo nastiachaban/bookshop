@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Author Detail Page</title>
+    <style>
+
+    .navbar {
+            background-color: #858283;
+            padding: 30px;
+            margin-right: -50px;
+            margin-left: -10px;
+            margin-top:-8px;
+            padding: 33px;
+        }
+        .navbar-nav .nav-link {
+            color: white;
+            font-size: 20px;
+            margin-right: 20px;
+            text-decoration: none;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .author-container {
+            width: 60%;
+            margin: 0 auto;
+            text-align: center;
+            padding: 20px;
+            border: 1px solid #ddd;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .author-image {
+            max-width: 150px;
+            border-radius: 25%;
+            margin-bottom: 20px;
+        }
+        .author-details {
+            text-align: left;
+        }
+        .author-details h2 {
+            margin-bottom: 10px;
+        }
+        .author-details p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg ">
+
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <ul class="navbar-nav ">
+            <a class="nav-link" th:href="@{/author/allAuthors}">Authors</a>
+            <a class="nav-link" th:href="@{/books/allBooks}">Books</a>
+            <a class="nav-link" th:href="@{/users/profile}">My profile</a>
+            <a th:href="@{/buy/cart}"><img src="/images/cart.png" style="width: 40px; margin-left: 1100px;"></a>
+        </ul>
+    </div>
+
+</nav>
+<div class="author-container">
+    <img th:src="@{${author.image}}" alt="Author Image" class="author-image"/>
+
+    <div class="author-details">
+
+        <h2 th:text="${author.firstName} + ' ' + ${author.lastName}"></h2>
+        <p><strong>Country:</strong> <span th:text="${author.country}"></span></p>
+        <p><strong>Year of Birth:</strong> <span th:text="${author.yearOfBirth}"></span></p>
+        <p><strong>Biography:</strong></p>
+        <p th:text="${author.biography}"></p>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+  <title>Cart</title>
+  <style>
+
+
+        body {
+            margin-top: 20px;
+            background: #eee;
+            font-family: 'Calibri', sans-serif;
+        }
+        .ui-w-40 {
+            width: 40px !important;
+            height: auto;
+        }
+        .card {
+            box-shadow: 0 1px 15px 1px rgba(52, 40, 104, .08);
+        }
+        .ui-product-color {
+            display: inline-block;
+            overflow: hidden;
+            margin: .144em;
+            width: .875rem;
+            height: .875rem;
+            border-radius: 10rem;
+            -webkit-box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15) inset;
+            box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15) inset;
+            vertical-align: middle;
+        }
+
+         .navbar {
+            background-color: #858283;
+            padding: 35px ;
+            margin-right: -20px;
+            margin-left: -20px;
+            margin-top:-20px;
+        }
+
+        .navbar-nav .nav-link {
+            color: white;
+            font-size: 20px;
+            margin-right: 8px;
+
+            text-decoration: none;
+        }
+
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg ">
+
+  <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+    <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+        <a class="nav-link" th:href="@{/author/allAuthors}" style="margin-left: 43px;">Authors</a>
+        <a class="nav-link" th:href="@{/books/allBooks}">Books</a>
+        <a class="nav-link" th:href="@{/users/profile}">My profile</a>
+    </ul>
+  </div>
+
+  <form class="form-inline my-2 my-lg-0">
+    <a class="nav-link" th:href="@{/buy/cart}"><img src="/images/cart.png" style="width: 40px; margin-right: 55px;"></a>
+  </form>
+
+</nav>
+
+<div class="container px-3 my-5 clearfix">
+  <!-- Shopping cart table -->
+  <div class="card">
+    <div class="card-header">
+      <h2>Shopping Cart</h2>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-bordered m-0">
+          <thead>
+          <tr>
+            <th class="text-center py-3 px-4" style="width: 200px;">Book Description</th>
+            <th class="text-center py-3 px-4" style="width: 100px;">Price</th>
+            <th class="text-center py-3 px-4" style="width: 120px;">Quantity</th>
+            <th class="text-center py-3 px-4" style="width: 100px;">Total</th>
+            <th class="text-center align-middle py-3 px-0" style="width: 40px;"><a href="#" class="shop-tooltip float-none text-light" title="" data-original-title="Clear cart"><i class="ino ion-md-trash"></i></a></th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="book: ${cart.listOfOrders}">
+            <td class="p-4">
+              <div class="media align-items-center">
+                <div class="media-body">
+                  <a href="#" class="d-block text-dark"></a>
+                  <small>
+                    <span class="text-muted">Name: </span>
+                    <span th:text="${book.book.name}" class=" text-dark"></span><br>
+                    <span class="text-muted">Author: </span>
+                    <span th:text="${book.book.author}" class=" text-dark"></span><br>
+                    <span class="text-muted">Language: </span>
+                    <span th:text="${book.book.language}" class=" text-dark"></span>
+                  </small>
+                </div>
+              </div>
+            </td>
+            <td class="text-center font-weight-semibold align-middle price p-4" th:text="${book.book.price} + '$'" data-price="${book.book.price}"></td>
+            <td class="align-middle p-4"><input th:data-id="${book.id}" type="number" class="form-control text-center quantity" th:value="${book.amount}" min="1" th:max="${book.book.available}"></td>
+            <td class="text-center font-weight-semibold align-middle p-4 total" th:text="${book.book.price * book.amount} + '$'"></td>
+            <td class="text-center align-middle px-0"><a href="#" class="shop-tooltip close float-none text-danger" th:data-id="${book.id}" title="" data-original-title="Remove">×</a></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="d-flex flex-wrap justify-content-between align-items-center pb-4">
+        <div class="d-flex">
+          <div class="text-right mt-4">
+            <label class="text-muted font-weight-normal m-0">Total price</label>
+            <div class="text-large"><strong id="total-price" th:text="${cart.getTotalPrice()}"></strong> $</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="float-right">
+        <a type="button" class="btn btn-lg btn-default md-btn-flat mt-2 mr-3" th:href="@{/books/allBooks}" >Back to shopping</a>
+        <button type="button" class="btn btn-lg btn-primary mt-2">Checkout</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function deleteBook(id) {
+    fetch(`/buy/delete/${id}`, {
+        method: 'DELETE',
+    })
+    .then(response => {
+        if (response.ok) {
+            console.log('Book deleted successfully');
+            // Optionally, update your UI to reflect the deletion
+        } else {
+            console.error('Failed to delete the book');
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+    document.addEventListener('DOMContentLoaded', function() {
+        const quantities = document.querySelectorAll('.quantity');
+        const priceElements = document.querySelectorAll('.price');
+        const totalElements = document.querySelectorAll('.total');
+        const totalPriceElement = document.getElementById('total-price');
+
+        quantities.forEach((quantity, index) => {
+            quantity.addEventListener('input', function() {
+                const price = parseFloat(priceElements[index].innerText.replace('$',''));
+                const newQuantity = parseInt(quantity.value);
+                const newTotal = price * newQuantity;
+                totalElements[index].innerText = newTotal.toFixed(2) + '$';
+
+                // Update the overall total price
+                let overallTotal = 0;
+                totalElements.forEach(totalElement => {
+                    overallTotal += parseFloat(totalElement.innerText.replace('$', ''));
+                });
+                totalPriceElement.innerText = overallTotal.toFixed(2);
+            });
+        });
+    });
+
+    //---------------------- x button
+    document.addEventListener('DOMContentLoaded', function() {
+    const quantities = document.querySelectorAll('.quantity');
+    const priceElements = document.querySelectorAll('.price');
+    const totalElements = document.querySelectorAll('.total');
+    const totalPriceElement = document.getElementById('total-price');
+    const removeButtons = document.querySelectorAll('.close');
+
+  function updateQuantity(id,quantity) {
+    const queryParams = new URLSearchParams({quantity: quantity});
+      fetch(`/buy/update/${id}?${queryParams}`, {
+          method: 'PUT',
+      })
+      .then(response => {
+          if (response.ok) {
+              console.log('Book quantity updated successfully');
+          } else {
+              console.error('Failed to update book quantity');
+          }
+      })
+      .catch(error => console.error('Error:', error));
+  }
+
+    quantities.forEach((quantity, index) => {
+        quantity.addEventListener('input', function() {
+            const price = parseFloat(priceElements[index].innerText.replace('$', ''));
+            const newQuantity = parseInt(quantity.value);
+            const newTotal = price * newQuantity;
+            totalElements[index].innerText = newTotal.toFixed(2) + '$';
+            const bookId = quantity.getAttribute('data-id');
+            updateQuantity(bookId,newQuantity);
+            updateTotalPrice();
+        });
+    });
+
+    function updateTotalPrice() {
+        let overallTotal = 0;
+        document.querySelectorAll('.total').forEach(totalElement => {
+            overallTotal += parseFloat(totalElement.innerText.replace('$', ''));
+        });
+        totalPriceElement.innerText = overallTotal.toFixed(2);
+    }
+
+     removeButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const row = button.closest('tr');
+            const bookId = button.getAttribute('data-id'); // Get the book ID from the data-id attribute
+            row.remove(); // Remove the row from the UI
+            updateTotalPrice();
+            deleteBook(bookId); // Pass the book ID to deleteBook function
+        });
+    });
+});
+
+
+
+</script>
+</body>
+</html>

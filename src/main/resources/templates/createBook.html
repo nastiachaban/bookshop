@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Book</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-NmL4eYPzzS5Rv0jht0Jm8WrF0C8iM0vcO+w0lAbHH3+I++9iFQ8W5MGe5J5y8uEy" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+    <style>
+        .form-label {
+            font-weight: bold;
+            text-align: right;
+            padding-right: 15px;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        .container{
+         margin: 0 auto;
+         max-width:300px;
+        }
+        body{
+            font-family: 'Calibri', sans-serif;
+            margin-left: 30px;
+             margin: 0 auto;
+        }
+        button {
+            font-size: 1em;
+            margin-bottom: 20px;
+            color: white;
+            border-radius: 5px;
+            border: none;
+            background-color: pink;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            width:180px;
+        }
+
+         .cancel{
+            width: 140px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border: none;
+            background-color: pink;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .form-control{
+        margin-top: 3px;
+        padding: 5px 5px 5px 5px;
+        }
+
+        .form-select{
+        margin-top: 3px;
+        padding: 5px 5px 5px 5px;
+        }
+
+            button:hover {
+        background-color: #ff69b4;
+         }
+
+    .cancel:hover{
+        background-color: #ff69b4;
+    }
+
+         .navbar {
+            background-color: #858283;
+            padding: 30px;
+
+        }
+        .navbar-nav .nav-link {
+            color: white;
+            font-size: 20px;
+            margin-right: 20px;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg ">
+
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <ul class="navbar-nav ">
+            <a class="nav-link" th:href="@{/author/allAuthors}">Authors</a>
+            <a class="nav-link" th:href="@{/books/allBooks}">Books</a>
+            <a class="nav-link" th:href="@{/users/profile}">My profile</a>
+            <a th:href="@{/buy/cart}"><img src="/images/cart.png" style="width: 40px; margin-left: 1100px;"></a>
+        </ul>
+    </div>
+
+</nav>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <form action="#" class="form"
+                          th:action="@{/books/createBook}"
+                          th:object="${book}"
+                          method="post">
+                        <br>
+                        <br>
+                        <br>
+                        <div class="form-group row">
+                            <label for="name" class="col-sm-4 col-form-label form-label">Name</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" id="name" th:field="*{name}"required>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="author" class="col-sm-4 col-form-label form-label">Author</label>
+                            <div class="col-sm-8">
+                                <select id="author" class="form-select" th:field="*{author}" required>
+                                    <option th:value="${null}">choose...</option>
+                                    <option th:each="a: ${authors}" th:value="${a.id}" th:label="${a.firstName} + ' ' + ${a.lastName}"></option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="language" class="col-sm-4 col-form-label form-label">Language</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" id="language" required th:field="*{language}">
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="publication" class="col-sm-4 col-form-label form-label">Publication Year</label>
+                            <div class="col-sm-8">
+                                <input type="number" class="form-control" id="publication" min="1800" max="2024" th:field="*{publication}" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="genre" class="col-sm-4 col-form-label form-label">Genre</label>
+                            <div class="col-sm-8">
+                                <select id="genre" class="form-select" th:field="*{genre}" required>
+                                    <option th:value="${null}">choose...</option>
+                                    <option th:each="gen: ${genres}" th:value="${gen}" th:label="${gen}"></option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="pages" class="col-sm-4 col-form-label form-label">Pages</label>
+                            <div class="col-sm-8">
+                                <input type="number" class="form-control" id="pages" th:field="*{pages}" required>
+                            </div>
+                        </div>
+
+                        <div class="d-grid mt-3">
+                            <button type="submit" class="btn btn-primary">Add Book</button>
+                        </div>
+
+                        <div class="d-grid mt-3">
+                            <button type="reset" class="btn btn-primary">Reset</button>
+                        </div>
+
+                        <div class="cancel d-grid mt-3">
+                            <a href="@{/books/allBooks}" style="color: white; text-decoration:none; font-size: 18px;">Cancel</a>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
