@@ -81,6 +81,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
+
         return http
                 .cors(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
@@ -88,6 +89,7 @@ public class SecurityConfig {
 //        Set permissions on endpoints
                 .authorizeHttpRequests(auth -> auth
 //            our public endpoints
+                        .requestMatchers("/images/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/users/signUp/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/users/logIn/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/books/allBooks").permitAll()
@@ -108,6 +110,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/author/{id}/deleteAuthor").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/author/{id}/edit").hasRole("ADMIN")
                         .anyRequest().authenticated())
+
                 .authenticationManager(authenticationManager)
                 .build();
     }
