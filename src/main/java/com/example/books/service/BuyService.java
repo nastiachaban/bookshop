@@ -7,6 +7,7 @@ import com.example.books.repos.CartRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 @Service
@@ -28,7 +29,10 @@ public class BuyService {
             return cart.get();
         }
         else{
-            return null;
+            Cart cart2= new Cart(UserController.user);
+            cart2.setListOfOrders(new ArrayList<>());
+            repo.save(cart2);
+            return cart2;
         }
     }
 

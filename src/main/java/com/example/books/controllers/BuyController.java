@@ -11,6 +11,7 @@ import com.example.books.service.BuyService;
 import com.example.books.service.OrderBookService;
 import com.example.books.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -39,39 +40,23 @@ public class BuyController {
     @GetMapping("/cart")
     public String getCart(Model model){
        Cart cart = buyService.getCart();
-//        Book b1 = bookService.getBookById(152).get();
-//        Book b2 = bookService.getBookById(153).get();
-//
-//        OrderBook bo1 = new OrderBook();
-//        bo1.setAmount(3);
-//        bo1.setBook(b1);
-//        bo1.setId(idGenerator);
-//        idGenerator++;
-//
-//        OrderBook bo2 = new OrderBook();
-//        bo2.setAmount(5);
-//        bo2.setBook(b2);
-//        bo2.setId(idGenerator);
-//        idGenerator++;
-//        List<OrderBook> orders= cart.getListOfOrders();
-//        orders.add(bo1);
-//        orders.add(bo2);
         model.addAttribute("cart",cart);
         return "cart";
     }
 
     @DeleteMapping("/delete/{id}")
-    public void deleteBook(@PathVariable long id){
-        Cart cart=buyService.getCart();
-        for(OrderBook o: cart.getListOfOrders()) {
+    @ResponseBody
+    public ResponseEntity<Void> deleteBook(@PathVariable long id) {
+        Cart cart = buyService.getCart();
+        for (OrderBook o : cart.getListOfOrders()) {
             if (o.getId() == id) {
-                //cart.getListOfOrders().remove(o);
-                //buyService.saveCart(cart);
                 orderBookService.deleteOrderBook(o);
                 break;
             }
         }
+        return ResponseEntity.ok().build(); // Return 200 OK
     }
+
 
     @PostMapping("/{id}/addToCart")
     public String addToCart(@PathVariable long id){
@@ -94,7 +79,8 @@ public class BuyController {
     }
 
     @PutMapping("/update/{id}")
-    public void updateQuantity(@PathVariable long id, @RequestParam int quantity){
+    @ResponseBody
+    public ResponseEntity<Void> updateQuantity(@PathVariable long id, @RequestParam int quantity){
         Cart cart=buyService.getCart();
         for(OrderBook o: cart.getListOfOrders()) {
             if (o.getId() == id) {
@@ -103,5 +89,6 @@ public class BuyController {
                 break;
             }
         }
+        return ResponseEntity.ok().build();
     }
 }

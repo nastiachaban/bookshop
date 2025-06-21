@@ -166,7 +166,7 @@ public class UserController {
 
 
     @GetMapping("/profile")
-    @PreAuthorize("hasRole('USER')")
+   // @PreAuthorize("hasRole('USER')")
     public String profile(Model model){
         LOGGER.info("redirect to profile page");
         model.addAttribute("user",user);

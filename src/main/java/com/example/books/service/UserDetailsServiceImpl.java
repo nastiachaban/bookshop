@@ -2,6 +2,7 @@ package com.example.books.service;
 
 import com.example.books.controllers.UserController;
 import com.example.books.exceptions.NotFoundException;
+import com.example.books.models.CustomUserDetails;
 import com.example.books.models.User;
 import com.example.books.repos.UserRepo;
 import org.slf4j.Logger;
@@ -26,9 +27,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         User user = repository.findByUsername(username).orElseThrow(() ->
                 new NotFoundException(String.format("User does not exist, username: %s", username)));
 
-        return org.springframework.security.core.userdetails.User.builder()
-                .username(user.getUsername())
-                .password(user.getPassword())
-                .build();
+        return CustomUserDetails.create(user);
     }
 }
