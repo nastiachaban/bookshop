@@ -42,22 +42,7 @@ public class SecurityConfig {
     }
 
 
-    // User Creation
-//    @Bean
-//    public UserDetailsService userDetailsService(PasswordEncoder encoder) {
-//        // InMemoryUserDetailsManager setup with two users
-//        UserDetails admin = User.withUsername("Amiya")
-//                .password(encoder.encode("123"))
-//                .roles("ADMIN", "USER")
-//                .build();
-//
-//        UserDetails user = User.withUsername("Ejaz")
-//                .password(encoder.encode("123"))
-//                .roles("USER")
-//                .build();
-//
-//        return new InMemoryUserDetailsManager(admin, user);
-//    }
+
 
     // Configuring HttpSecurity
 //    @Bean
@@ -72,10 +57,10 @@ public class SecurityConfig {
 //                        .requestMatchers("/books/**").authenticated()
 //                        .requestMatchers("/author/**").authenticated()
 //                        .requestMatchers("/users/logIn").permitAll()
-//                );
-////                .formLogin(form -> form
-////                .loginPage("/users/logIn") // Custom login page
-////                .permitAll()
+//                )
+//                .formLogin(form -> form
+//                .loginPage("/users/logIn") // Custom login page
+//                .permitAll();
 //
 //
 //        return http.build();
@@ -85,31 +70,29 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
 
         return http
-                .cors(AbstractHttpConfigurer::disable)
-                .csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//        Set permissions on endpoints
+                .csrf().disable()
                 .authorizeHttpRequests(auth -> auth
 //            our public endpoints
                         .requestMatchers("/images/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/users/signUp/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/users/logIn/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/books/allBooks").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/books/allBooks").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/books/allBooks/sort").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/books/{id}/details").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/author/allAuthors").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/author/allAuthors").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/author/allAuthors/sort").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/author/{id}/details").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/users/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/users/profile").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/users/profile").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/users/logout").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/buy/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/buy/**").permitAll()
-                        .requestMatchers(HttpMethod.PUT, "/buy/**").permitAll()
-                        .requestMatchers(HttpMethod.DELETE, "/buy/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/users/logIn/**").permitAll()
+//                        .requestMatchers(HttpMethod.GET, "/books/allBooks").authenticated()
+//                        .requestMatchers(HttpMethod.POST, "/books/allBooks").permitAll()
+//                                .requestMatchers(HttpMethod.POST, "/books/allBooks/sort").permitAll()
+//                        .requestMatchers(HttpMethod.GET, "/books/{id}/details").permitAll()
+//                        .requestMatchers(HttpMethod.GET, "/author/allAuthors").permitAll()
+//                        .requestMatchers(HttpMethod.POST, "/author/allAuthors").permitAll()
+//                        .requestMatchers(HttpMethod.POST, "/author/allAuthors/sort").permitAll()
+//                        .requestMatchers(HttpMethod.GET, "/author/{id}/details").permitAll()
+//                        .requestMatchers(HttpMethod.GET, "/users/**").permitAll()
+//                        .requestMatchers(HttpMethod.POST, "/users/profile").permitAll()
+//                        .requestMatchers(HttpMethod.GET, "/users/profile").permitAll()
+//                        .requestMatchers(HttpMethod.POST, "/users/logout").permitAll()
+//                        .requestMatchers(HttpMethod.GET, "/buy/**").permitAll()
+//                        .requestMatchers(HttpMethod.POST, "/buy/**").permitAll()
+//                        .requestMatchers(HttpMethod.PUT, "/buy/**").permitAll()
+//                        .requestMatchers(HttpMethod.DELETE, "/buy/**").permitAll()
                       //  .requestMatchers(HttpMethod.POST,"").permitAll()
                         ///{id}/edit
 //            our private endpoints
@@ -129,17 +112,32 @@ public class SecurityConfig {
 
                         ///buy/update/${id}
                         .anyRequest().authenticated())
-
-                .authenticationManager(authenticationManager)
+                .formLogin(form -> form
+                        .loginPage("/users/logIn")                    // GET - show login form
+                        .loginProcessingUrl("/users/logIn")                // POST - form submits here
+                        .defaultSuccessUrl("/books/allBooks", true)   // Redirect after successful login
+                        .failureUrl("/users/logIn?error=true")        // Redirect on failed login
+                        .permitAll()
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/users/logIn?logout=true")
+                        .permitAll()
+                )
                 .build();
     }
 
 
+//    @Bean
+//    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
+//        AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
+//        authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+//        return authenticationManagerBuilder.build();
+//    }
+
     @Bean
-    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
-        AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
-        authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
-        return authenticationManagerBuilder.build();
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
     }
 
     @Bean

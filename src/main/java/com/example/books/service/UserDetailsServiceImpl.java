@@ -23,10 +23,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) {
-        LOGGER.info("inside load by username");
-        User user = repository.findByUsername(username).orElseThrow(() ->
-                new NotFoundException(String.format("User does not exist, username: %s", username)));
-
-        return CustomUserDetails.create(user);
+//        LOGGER.info("inside load by username");
+//        User user = repository.findByUsername(username).orElseThrow(() ->
+//                new NotFoundException(String.format("User does not exist, username: %s", username)));
+//
+//        return CustomUserDetails.create(user);
+        User user = repository.findByUsername(username).get();
+        if (user == null) throw new RuntimeException("User not found");
+        return user;
     }
 }

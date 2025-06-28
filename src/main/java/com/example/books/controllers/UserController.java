@@ -82,21 +82,32 @@ public class UserController {
     public String logIn(Model model){
         model.addAttribute("user",new LogIn());
         LOGGER.info("redirect to login page");
-        return "logIn";
+        return "login";
     }
 
-    @PostMapping(value = "/logIn")
-    public String login(@ModelAttribute LogIn request) {
-        LOGGER.info("post login");
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
-        User user= service.getByUsername(request.getUsername());
-        String token = JwtHelper.generateAccessToken(user);
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user, null, null);
-        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-        // TODO
-        //return ResponseEntity.ok(new LoginResponse(request.getUsername(), token));
-        return "redirect:/books/allBooks";
-    }
+//    @PostMapping(value = "/logIn")
+//    public String login(@ModelAttribute LogIn request) {
+//        LOGGER.info("post login");
+//        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+//        User user= service.getByUsername(request.getUsername());
+//        String token = JwtHelper.generateAccessToken(user);
+//        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user, null, null);
+//        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+//        // TODO
+//        //return ResponseEntity.ok(new LoginResponse(request.getUsername(), token));
+//        return "redirect:/books/allBooks";
+//
+//        try {
+//            UsernamePasswordAuthenticationToken token =new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
+//
+//            Authentication auth = authenticationManager.authenticate(token);
+//            SecurityContextHolder.getContext().setAuthentication(auth);
+//
+//            return "redirect:/books/allBooks";
+//        } catch (AuthenticationException ex) {
+//            return "redirect:/users/logIn?error=true";
+//        }
+//    }
 
     @PostMapping("/signUp")
     public String signUp(@ModelAttribute SignUp requestDto) {
