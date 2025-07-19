@@ -73,58 +73,6 @@
         background-color: #ff69b4;
         }
 
-        .navbar {
-                background-color: #858283;
-                padding: 30px;
-                margin-right: -20px;
-                margin-left: -20px;
-                margin-top: -20px;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            }
-
-            .navbar-nav {
-                display: flex;
-                align-items: center;
-            }
-
-            .navbar-nav .nav-link {
-                color: white;
-                font-size: 20px;
-                margin-right: 20px;
-                text-decoration: none;
-                white-space: nowrap;
-                padding: 8px 12px;
-            }
-
-            .navbar-nav form {
-                margin: 0;
-            }
-
-            .logout {
-                background-color: transparent;
-                color: white;
-                font-size: 18px;
-                text-decoration: none;
-                padding: 8px 12px;
-                border: none;
-                white-space: nowrap;
-                cursor: pointer;
-            }
-
-            .logout:hover {
-                color: #ff69b4;
-                background-color: transparent;
-            }
-
-            .navbar-nav img {
-                margin-left: auto;
-                display: inline-block;
-                width: 40px;
-                height: auto;
-            }
-
 
         input{
         border-radius: 5px;
@@ -180,26 +128,77 @@
         color: #ff1493;
         }
 
+
+  .navbar {
+    background-color: #858283;
+    padding: 30px;
+    margin: -20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .navbar-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .nav-link {
+    color: white;
+    font-size: 20px;
+    text-decoration: none;
+    padding: 8px 12px;
+    white-space: nowrap;
+  }
+
+  .logout {
+    background-color: transparent;
+    color: white;
+    font-size: 18px;
+    padding: 8px 12px;
+    border: none;
+    cursor: pointer;
+  }
+
+  .logout:hover,
+  .nav-link:hover {
+    color: #ff69b4;
+  }
+
+  .cart-icon {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+  }
+
+  .cart-icon img {
+    width: 30px;
+    height: auto;
+    object-fit: contain;
+  }
+
+
     </style>
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg ">
+<nav class="navbar">
+    <div class="navbar-left">
+        <a class="nav-link" th:href="@{/author/allAuthors}">Authors</a>
+        <a class="nav-link" th:href="@{/books/allBooks}">Books</a>
+        <a class="nav-link" th:href="@{/users/profile}">My profile</a>
 
-    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-        <ul class="navbar-nav ">
-            <a class="nav-link" th:href="@{/author/allAuthors}">Authors</a>
-            <a class="nav-link" th:href="@{/books/allBooks}">Books</a>
-            <a class="nav-link" th:href="@{/users/profile}">My profile</a>
-
-            <form th:action="@{/users/logout}" method="post">
-                <button class="logout" >Log out</button>
-            </form>
-
-            <a th:href="@{/buy/cart}"><img src="/images/cart.png" style="width: 40px; margin-left: 900px;"></a>
-        </ul>
+        <form th:action="@{/users/logout}" method="post">
+            <button class="logout">Log out</button>
+        </form>
     </div>
 
+    <div class="cart-icon">
+        <a th:href="@{/buy/cart}">
+            <img src="/images/cart.png" alt="Cart Icon">
+        </a>
+    </div>
 </nav>
 
 
@@ -241,7 +240,7 @@
 
 
 <div class="container">
-    <a class="btn" th:href="@{/author/addAuthor}">Add Author</a>
+    <a class="btn" th:href="@{/author/addAuthor}" th:if="${isAdmin}">Add Author</a>
     <table>
         <thead>
         <tr>
@@ -257,8 +256,8 @@
             <td th:text="${a.lastName}"></td>
             <td th:text="${a.yearOfBirth}"></td>
             <td>
-                <a th:href="@{/author/{id}/edit (id=${a.id})}" style="color:#ff1493;">Edit</a>
-                <a th:href="@{/author/{id}/deleteAuthor (id=${a.id})}" style="color:#ff1493">Delete</a>
+                <a th:href="@{/author/{id}/edit (id=${a.id})}" style="color:#ff1493;" th:if="${isAdmin}">Edit</a>
+                <a th:href="@{/author/{id}/deleteAuthor (id=${a.id})}" style="color:#ff1493" th:if="${isAdmin}">Delete</a>
                 <a th:href="@{/author/{id}/details (id=${a.id})}"  style="color:#ff1493;">Details</a>
             </td>
         </tr>

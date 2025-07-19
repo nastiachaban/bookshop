@@ -1,5 +1,7 @@
 package com.example.books.controllers;
 
+import com.example.books.models.Role;
+import com.example.books.models.User;
 import com.example.books.service.AuthorService;
 import com.example.books.models.Author;
 import org.slf4j.Logger;
@@ -7,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -50,7 +53,11 @@ public class AuthorController {
 
     @GetMapping("/allAuthors")
     public String allAuthors(Model model){
+
+        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
         model.addAttribute("authors", service.getAll());
+        model.addAttribute("isAdmin",user.getRole().equals(Role.ADMIN));
         return "allAuthors";
     }
 
@@ -58,7 +65,7 @@ public class AuthorController {
     public String deleteAuthor(@PathVariable long id, Model model){
         service.deleteById(id);
         model.addAttribute("authors", service.getAll());
-        return "allAuthors";
+        return "redirect:/author/allAuthors";
     }
 
     @PostMapping("/createAuthor")
@@ -89,10 +96,17 @@ public class AuthorController {
     }
 
     @PostMapping("/{id}/edit")
-    public String saveChanges(Model model, @PathVariable long id, Author author){
+    public String saveChanges(Model model, @PathVariable long id, Author author, @RequestParam("imageFile")MultipartFile file) throws IOException {
+        if(file!=null && !file.getOriginalFilename().isEmpty()){
+            StringBuilder fileNames = new StringBuilder();
+            Path fileNameAndPath = Paths.get(UPLOAD_DIRECTORY, file.getOriginalFilename());
+            fileNames.append(file.getOriginalFilename());
+            Files.write(fileNameAndPath, file.getBytes());
+            author.setImage("\\images\\"+file.getOriginalFilename());
+        }
         service.updateAuthor(author);
-        model.addAttribute("authors", service.getAll());
-        return "allAuthors";
+
+        return "redirect:/author/allAuthors";
     }
 
     @GetMapping("/{id}/deleteAuthor")
@@ -129,8 +143,7 @@ public class AuthorController {
                     authors.add(a);
                 }
             }}
-        model.addAttribute("authors", authors);
-        return "allAuthors";
+        return "redirect:/author/allAuthors";
     }
 
     @PostMapping("/allAuthors/sort")
@@ -157,7 +170,6 @@ public class AuthorController {
             }
         }
 
-        model.addAttribute("authors", authors);
-        return "allAuthors";
+        return "redirect:/author/allAuthors";
     }
 }

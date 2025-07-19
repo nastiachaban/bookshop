@@ -149,81 +149,79 @@
                 color: #ff1493;
             }
 
-            /* Navbar Styles */
-            .navbar {
-                background-color: #858283;
-                padding: 30px;
-                margin-right: -20px;
-                margin-left: -20px;
-                margin-top: -20px;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            }
 
-            .navbar-nav {
-                display: flex;
-                align-items: center;
-            }
+  .navbar {
+    background-color: #858283;
+    padding: 30px;
+    margin: -20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
 
-            .navbar-nav .nav-link {
-                color: white;
-                font-size: 20px;
-                margin-right: 20px;
-                text-decoration: none;
-                white-space: nowrap;
-                padding: 8px 12px;
-            }
+  .navbar-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
 
-            .navbar-nav form {
-                margin: 0;
-            }
+  .nav-link {
+    color: white;
+    font-size: 20px;
+    text-decoration: none;
+    padding: 8px 12px;
+    white-space: nowrap;
+  }
 
-            .logout {
-                background-color: transparent;
-                color: white;
-                font-size: 18px;
-                text-decoration: none;
-                padding: 8px 12px;
-                border: none;
-                white-space: nowrap;
-                cursor: pointer;
-            }
+  .logout {
+    background-color: transparent;
+    color: white;
+    font-size: 18px;
+    padding: 8px 12px;
+    border: none;
+    cursor: pointer;
+  }
 
-            .logout:hover {
-                color: #ff69b4;
-                background-color: transparent;
-            }
+  .logout:hover,
+  .nav-link:hover {
+    color: #ff69b4;
+  }
 
-            .navbar-nav img {
-                margin-left: auto;
-                display: inline-block;
-                width: 40px;
-                height: auto;
-            }
+  .cart-icon {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+  }
+
+  .cart-icon img {
+    width: 30px;
+    height: auto;
+    object-fit: contain;
+  }
 
 
     </style>
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg ">
+<nav class="navbar">
+    <div class="navbar-left">
+        <a class="nav-link" th:href="@{/author/allAuthors}">Authors</a>
+        <a class="nav-link" th:href="@{/books/allBooks}">Books</a>
+        <a class="nav-link" th:href="@{/users/profile}">My profile</a>
 
-    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-        <ul class="navbar-nav ">
-            <a class="nav-link" th:href="@{/author/allAuthors}">Authors</a>
-            <a class="nav-link" th:href="@{/books/allBooks}">Books</a>
-            <a class="nav-link" th:href="@{/users/profile}">My profile</a>
-
-            <form th:action="@{/users/logout}" method="post">
-                <button class="logout" >Log out</button>
-            </form>
-
-            <a th:href="@{/buy/cart}"><img th:src="@{/images/cart.png}" style="width: 40px; margin-left: 900px;"></a>
-        </ul>
+        <form th:action="@{/users/logout}" method="post">
+            <button class="logout">Log out</button>
+        </form>
     </div>
 
+    <div class="cart-icon">
+        <a th:href="@{/buy/cart}">
+            <img src="/images/cart.png" alt="Cart Icon">
+        </a>
+    </div>
 </nav>
+
 
 <div class="search-sort-container">
     <div class="search-form">
@@ -270,7 +268,7 @@
 </div>
 
 <div class="container">
-    <a class="btn" th:href="@{/books/addBook}">Add Book</a>
+    <a class="btn" th:href="@{/books/addBook}" th:if="${isAdmin}">Add Book</a>
     <table>
         <thead>
         <tr>
@@ -292,8 +290,8 @@
             <td th:text="${book.publication}"></td>
             <td th:text="${book.pages}"></td>
             <td style="width:250px; display:flex; align-items:center; gap:10px;">
-                <a th:href="@{/books/{id}/edit (id=${book.id})}" class="btn3" >Edit</a>
-                <a th:href="@{/books/{id}/deleteBook (id=${book.id})}" class="btn3" >Delete</a>
+                <a th:href="@{/books/{id}/edit (id=${book.id})}" class="btn3" th:if="${isAdmin}" >Edit</a>
+                <a th:href="@{/books/{id}/deleteBook (id=${book.id})}" class="btn3" th:if="${isAdmin}">Delete</a>
                 <a th:href="@{/books/{id}/details (id=${book.id})}" class="btn3" >Details</a>
 
                 <form th:action="@{/buy/{id}/addToCart (id=${book.id})}" method="post" style="margin: 0;">

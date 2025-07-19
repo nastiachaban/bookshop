@@ -34,41 +34,80 @@
             vertical-align: middle;
         }
 
-         .navbar {
-            background-color: #858283;
-            padding: 35px ;
-            margin-right: -20px;
-            margin-left: -20px;
-            margin-top:-20px;
-        }
 
-        .navbar-nav .nav-link {
-            color: white;
-            font-size: 20px;
-            margin-right: 8px;
+  .navbar {
+    background-color: #858283;
+    padding: 30px;
+    margin: -20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
 
-            text-decoration: none;
-        }
+  .navbar-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .nav-link {
+    color: white;
+    font-size: 20px;
+    text-decoration: none;
+    padding: 8px 12px;
+    white-space: nowrap;
+  }
+
+  .logout {
+    background-color: transparent;
+    color: white;
+    font-size: 18px;
+    padding: 8px 12px;
+    border: none;
+    cursor: pointer;
+  }
+
+  .logout:hover,
+  .nav-link:hover {
+    color: #ff69b4;
+  }
+
+  .cart-icon {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+  }
+
+  .cart-icon img {
+    width: 30px;
+    height: auto;
+    object-fit: contain;
+  }
+
 
     </style>
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg ">
+<nav class="navbar">
+  <div class="navbar-left">
+    <a class="nav-link" th:href="@{/author/allAuthors}">Authors</a>
+    <a class="nav-link" th:href="@{/books/allBooks}">Books</a>
+    <a class="nav-link" th:href="@{/users/profile}">My profile</a>
 
-  <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
-    <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-        <a class="nav-link" th:href="@{/author/allAuthors}" style="margin-left: 43px;">Authors</a>
-        <a class="nav-link" th:href="@{/books/allBooks}">Books</a>
-        <a class="nav-link" th:href="@{/users/profile}">My profile</a>
-    </ul>
+    <form th:action="@{/users/logout}" method="post">
+      <button class="logout">Log out</button>
+    </form>
   </div>
 
-  <form class="form-inline my-2 my-lg-0">
-    <a class="nav-link" th:href="@{/buy/cart}"><img src="/images/cart.png" style="width: 40px; margin-right: 55px;"></a>
-  </form>
-
+  <div class="cart-icon">
+    <a th:href="@{/buy/cart}">
+      <img src="/images/cart.png" alt="Cart Icon">
+    </a>
+  </div>
 </nav>
+
+
 
 <div class="container px-3 my-5 clearfix">
   <!-- Shopping cart table -->

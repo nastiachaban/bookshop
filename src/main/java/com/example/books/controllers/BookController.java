@@ -1,9 +1,6 @@
 package com.example.books.controllers;
 
-import com.example.books.models.Author;
-import com.example.books.models.Book;
-import com.example.books.models.Genre;
-import com.example.books.models.User;
+import com.example.books.models.*;
 import com.example.books.service.AuthorService;
 import com.example.books.service.BookService;
 import org.slf4j.Logger;
@@ -47,7 +44,7 @@ public class BookController {
     }
 
     @PostMapping("/createBook")
-    public String createBook(Model model, Book book, BindingResult result){
+    public String createBook(Book book, BindingResult result){
         if(result.hasErrors()){
             LOGGER.error("binding result has errors");
             return "createBook";
@@ -66,8 +63,11 @@ public class BookController {
 
     @GetMapping("/allBooks")
     public String allBooks(Model model){
+        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
         model.addAttribute("books",service.getAllBooks());
         System.out.println(Arrays.toString(service.getAllBooks().toArray()));
+        model.addAttribute("isAdmin",user.getRole().equals(Role.ADMIN));
         return "allBooks";
     }
 
@@ -75,7 +75,7 @@ public class BookController {
     public String deleteBook(@PathVariable long id,Model model){
         service.deleteBookById(id);
         model.addAttribute("books",service.getAllBooks());
-        return "allBooks";
+        return "redirect:/books/allBooks";
     }
 
     @GetMapping("/{id}/edit")
@@ -98,11 +98,10 @@ public class BookController {
         book.setId(id);
         service.updateBook(book);
         model.addAttribute("books",service.getAllBooks());
-        return "allBooks";
+        return "redirect:/books/allBooks";
     }
 
     @GetMapping("/{id}/deleteBook")
-    @PreAuthorize("hasRole('ADMIN')")
     public String areYouSure(Model model,@PathVariable long id){
         model.addAttribute("id",id);
         return "deleteBook";
@@ -151,8 +150,7 @@ public class BookController {
                     books.add(b);
                 }
             }}
-        model.addAttribute("books",books);
-        return "allBooks";
+        return "redirect:/books/allBooks";
     }
 
     @PostMapping("/allBooks/sort")
@@ -205,8 +203,7 @@ public class BookController {
             }
         }
 
-        model.addAttribute("books",books);
-        return "allBooks";
+        return "redirect:/books/allBooks";
     }
 
 }

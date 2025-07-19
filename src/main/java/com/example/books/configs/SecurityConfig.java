@@ -41,31 +41,6 @@ public class SecurityConfig {
         this.userDetailsService = userDetailsService;
     }
 
-
-
-
-    // Configuring HttpSecurity
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        LOGGER.info("security filter chain");
-//        http
-//                .csrf(csrf -> csrf.disable()) // Disable CSRF for simplicity
-//                .authorizeHttpRequests(auth -> auth
-//                         // Permit all access to /auth/welcome
-//                        .requestMatchers("/users/profile").authenticated() // Require authentication for /auth/user/**
-//                      .requestMatchers("/users/signUp").permitAll()
-//                        .requestMatchers("/books/**").authenticated()
-//                        .requestMatchers("/author/**").authenticated()
-//                        .requestMatchers("/users/logIn").permitAll()
-//                )
-//                .formLogin(form -> form
-//                .loginPage("/users/logIn") // Custom login page
-//                .permitAll();
-//
-//
-//        return http.build();
-//    }
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
 
@@ -75,40 +50,23 @@ public class SecurityConfig {
 //            our public endpoints
                         .requestMatchers("/images/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/users/signUp/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/users/signUp/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/users/logIn/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/users/logIn/**").permitAll()
-//                        .requestMatchers(HttpMethod.GET, "/books/allBooks").authenticated()
-//                        .requestMatchers(HttpMethod.POST, "/books/allBooks").permitAll()
-//                                .requestMatchers(HttpMethod.POST, "/books/allBooks/sort").permitAll()
-//                        .requestMatchers(HttpMethod.GET, "/books/{id}/details").permitAll()
-//                        .requestMatchers(HttpMethod.GET, "/author/allAuthors").permitAll()
-//                        .requestMatchers(HttpMethod.POST, "/author/allAuthors").permitAll()
-//                        .requestMatchers(HttpMethod.POST, "/author/allAuthors/sort").permitAll()
-//                        .requestMatchers(HttpMethod.GET, "/author/{id}/details").permitAll()
-//                        .requestMatchers(HttpMethod.GET, "/users/**").permitAll()
-//                        .requestMatchers(HttpMethod.POST, "/users/profile").permitAll()
-//                        .requestMatchers(HttpMethod.GET, "/users/profile").permitAll()
-//                        .requestMatchers(HttpMethod.POST, "/users/logout").permitAll()
-//                        .requestMatchers(HttpMethod.GET, "/buy/**").permitAll()
-//                        .requestMatchers(HttpMethod.POST, "/buy/**").permitAll()
-//                        .requestMatchers(HttpMethod.PUT, "/buy/**").permitAll()
-//                        .requestMatchers(HttpMethod.DELETE, "/buy/**").permitAll()
-                      //  .requestMatchers(HttpMethod.POST,"").permitAll()
-                        ///{id}/edit
-//            our private endpoints
-                        .requestMatchers(HttpMethod.POST, "/books/addBook").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET,"/books/addBook").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/books/{id}/deleteBook").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/books/{id}/deleteBook").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/books/{id}/deleteBook").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/books/{id}/edit").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/books/{id}/edit").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/author/addAuthor").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/author/{id}/deleteAuthor").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/author/{id}/deleteAuthor").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/author/{id}/deleteAuthor").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/author/{id}/edit").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/author/{id}/edit").hasRole("ADMIN")
+
+                        .requestMatchers(HttpMethod.POST, "/books/addBook").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET,"/books/addBook").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/books/{id}/deleteBook").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/books/{id}/deleteBook").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/books/{id}/deleteBook").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/books/{id}/edit").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/books/{id}/edit").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/author/addAuthor").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/author/{id}/deleteAuthor").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/author/{id}/deleteAuthor").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/author/{id}/deleteAuthor").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/author/{id}/edit").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/author/{id}/edit").hasAuthority("ADMIN")
 
                         ///buy/update/${id}
                         .anyRequest().authenticated())
@@ -120,21 +78,12 @@ public class SecurityConfig {
                         .permitAll()
                 )
                 .logout(logout -> logout
-                        .logoutUrl("/logout")
+                        .logoutUrl("/users/logout")
                         .logoutSuccessUrl("/users/logIn?logout=true")
                         .permitAll()
                 )
                 .build();
     }
-
-
-//    @Bean
-//    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
-//        AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
-//        authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
-//        return authenticationManagerBuilder.build();
-//    }
-
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();

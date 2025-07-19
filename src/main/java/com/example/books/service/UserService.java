@@ -28,7 +28,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 
 @Service
-@Transactional(readOnly = true)
+//@Transactional(readOnly = true)
 public class UserService {
 
     private static final String REFRESH_TOKEN_DOES_NOT_EXIST = "refresh token does not exist";

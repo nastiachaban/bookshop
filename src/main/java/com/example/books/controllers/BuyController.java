@@ -3,6 +3,7 @@ package com.example.books.controllers;
 import com.example.books.models.Book;
 import com.example.books.models.Cart;
 import com.example.books.models.OrderBook;
+import com.example.books.models.User;
 import com.example.books.repos.BookRepo;
 import com.example.books.repos.OrderBookRepo;
 import com.example.books.repos.UserRepo;
@@ -12,6 +13,7 @@ import com.example.books.service.OrderBookService;
 import com.example.books.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -38,16 +40,16 @@ public class BuyController {
     static long idGenerator=1;
 
     @GetMapping("/cart")
-    public String getCart(Model model){
-       Cart cart = buyService.getCart();
+    public String getCart(Model model, @AuthenticationPrincipal User user){
+       Cart cart = buyService.getCart(user);
         model.addAttribute("cart",cart);
         return "cart";
     }
 
     @DeleteMapping("/delete/{id}")
     @ResponseBody
-    public ResponseEntity<Void> deleteBook(@PathVariable long id) {
-        Cart cart = buyService.getCart();
+    public ResponseEntity<Void> deleteBook(@PathVariable long id, @AuthenticationPrincipal User user) {
+        Cart cart = buyService.getCart(user);
         for (OrderBook o : cart.getListOfOrders()) {
             if (o.getId() == id) {
                 orderBookService.deleteOrderBook(o);
@@ -59,9 +61,9 @@ public class BuyController {
 
 
     @PostMapping("/{id}/addToCart")
-    public String addToCart(@PathVariable long id){
+    public String addToCart(@PathVariable long id, @AuthenticationPrincipal User user){
         Optional<Book> b =  bookService.getBookById(id);
-        Cart cart=buyService.getCart();
+        Cart cart=buyService.getCart(user);
         if(b.isPresent()) {
             boolean exists= false;
             for(OrderBook o: cart.getListOfOrders()) {
@@ -71,7 +73,7 @@ public class BuyController {
                 }
             }
             if(!exists){
-                OrderBook order = new OrderBook(buyService.getCart(), b.get(), 1);
+                OrderBook order = new OrderBook(buyService.getCart(user), b.get(), 1);
                 orderBookService.saveOrder(order);
             }
         }
@@ -80,8 +82,8 @@ public class BuyController {
 
     @PutMapping("/update/{id}")
     @ResponseBody
-    public ResponseEntity<Void> updateQuantity(@PathVariable long id, @RequestParam int quantity){
-        Cart cart=buyService.getCart();
+    public ResponseEntity<Void> updateQuantity(@PathVariable long id, @RequestParam int quantity, @AuthenticationPrincipal User user){
+        Cart cart=buyService.getCart(user);
         for(OrderBook o: cart.getListOfOrders()) {
             if (o.getId() == id) {
                 o.setAmount(quantity);

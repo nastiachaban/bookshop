@@ -8,19 +8,56 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
     <style>
 
-     .navbar {
-            background-color: #858283;
-            padding: 30px;
-            margin-right: -50px;
-            margin-left: -30px;
-            margin-top:-8px;
-        }
-        .navbar-nav .nav-link {
-            color: white;
-            font-size: 20px;
-            margin-right: 20px;
-            text-decoration: none;
-        }
+
+  .navbar {
+    background-color: #858283;
+    padding: 30px;
+    margin: -20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .navbar-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .nav-link {
+    color: white;
+    font-size: 20px;
+    text-decoration: none;
+    padding: 8px 12px;
+    white-space: nowrap;
+  }
+
+  .logout {
+    background-color: transparent;
+    color: white;
+    font-size: 18px;
+    padding: 8px 12px;
+    border: none;
+    cursor: pointer;
+  }
+
+  .logout:hover,
+  .nav-link:hover {
+    color: #ff69b4;
+  }
+
+  .cart-icon {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+  }
+
+  .cart-icon img {
+    width: 30px;
+    height: auto;
+    object-fit: contain;
+  }
+
 
         body{
             font-family: 'Calibri', sans-serif;
@@ -82,18 +119,25 @@
     </style>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg ">
+<nav class="navbar">
+    <div class="navbar-left">
+        <a class="nav-link" th:href="@{/author/allAuthors}">Authors</a>
+        <a class="nav-link" th:href="@{/books/allBooks}">Books</a>
+        <a class="nav-link" th:href="@{/users/profile}">My profile</a>
 
-    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-        <ul class="navbar-nav ">
-            <a class="nav-link" th:href="@{/author/allAuthors}">Authors</a>
-            <a class="nav-link" th:href="@{/books/allBooks}">Books</a>
-            <a class="nav-link" th:href="@{/users/profile}">My profile</a>
-            <a th:href="@{/buy/cart}"><img src="/images/cart.png" style="width: 40px; margin-left: 1100px;"></a>
-        </ul>
+        <form th:action="@{/users/logout}" method="post">
+            <button class="logout">Log out</button>
+        </form>
     </div>
 
+    <div class="cart-icon">
+        <a th:href="@{/buy/cart}">
+            <img src="/images/cart.png" alt="Cart Icon">
+        </a>
+    </div>
 </nav>
+
+
 <div class="container mt-2">
     <div class="row justify-content-center">
         <div class="col-md-8">
@@ -101,7 +145,8 @@
                 <div class="card-body">
                     <form action="#" th:action="@{/author/{id}/edit (id=${author.id})}"
                           th:object="${author}"
-                          method="post">
+                          method="post"
+                          enctype="multipart/form-data">
 
                         <br>
                         <br>
@@ -123,7 +168,7 @@
                         <div class="form-group row">
                             <label for="yearOfBirth" class="col-sm-4 col-form-label form-label">Year of Birth</label>
                             <div class="col-sm-8">
-                                <input type="number" th:field="*{yearOfBirth}" class="form-control" id="yearOfBirth" min="1800" max="2000" required>
+                                <input type="number" th:field="*{yearOfBirth}" class="form-control" id="yearOfBirth" min="1800" max="2010" required>
                             </div>
                         </div>
 
@@ -135,11 +180,20 @@
                         </div>
 
                         <div class="form-group row">
-                            <label for="imageFile" class="col-sm-4 col-form-label form-label">ImageFile</label>
+                            <label class="col-sm-4 col-form-label form-label">Current Image</label>
                             <div class="col-sm-8">
-                                <input type="file" name="imageFile" class="form-control" id="imageFile" accept="image/*" required>
+                                <img th:src="@{${author.image}}" alt="Author Image" style="max-width: 100px; max-height: 100px;">
                             </div>
                         </div>
+
+                        <div class="form-group row">
+                            <label for="imageFile" class="col-sm-4 col-form-label form-label">ImageFile</label>
+                            <div class="col-sm-8">
+                                <input type="file" name="imageFile" class="form-control" id="imageFile" accept="image/*">
+                            </div>
+                        </div>
+
+                        <input type="hidden" th:field="*{image}">
 
                         <div class="form-group row">
                             <label for="country" class="col-sm-4 col-form-label form-label">Country</label>

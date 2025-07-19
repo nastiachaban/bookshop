@@ -15,6 +15,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -36,47 +37,11 @@ public class UserController {
      private AuthenticationManager authenticationManager;
     @Autowired
     private JavaMailSender emailSender;
-
-    public static User user;
     @Autowired
     private UserService service;
 
     @Autowired
     private BuyService service2;
-
-
-//    @PostMapping("/logIn")
-//    public String authorize(Model model, LogIn user, BindingResult result){
-//        if(result.hasErrors()){
-//            model.addAttribute("user", user);
-//            LOGGER.error("binding result has errors");
-//            return "login";
-//        }
-//        if(service.existsByUsername(user.getUsername())){
-//            User u = service.getByUsername(user.getUsername());
-//            if(u.getPassword().equals(service.hashPassword(user.getPassword()))){
-//                if(u.isEnabled()){
-//                this.user=u;
-//                service2.addCart();
-//                return "redirect:/books/allBooks";
-//                }
-//                else{
-//                    LOGGER.error("account is not verified");
-//                    user.setInfo("account is not verified");
-//                }
-//            }
-//            else{
-//                LOGGER.error("Wrong password");
-//                user.setInfo("Wrong password");
-//            }
-//        }
-//        else{
-//            LOGGER.error("Wrong username");
-//            user.setInfo("Wrong username");
-//        }
-//        model.addAttribute("user", user);
-//        return "login";
-//    }
 
     @GetMapping("/logIn")
     public String logIn(Model model){
@@ -84,30 +49,6 @@ public class UserController {
         LOGGER.info("redirect to login page");
         return "login";
     }
-
-//    @PostMapping(value = "/logIn")
-//    public String login(@ModelAttribute LogIn request) {
-//        LOGGER.info("post login");
-//        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
-//        User user= service.getByUsername(request.getUsername());
-//        String token = JwtHelper.generateAccessToken(user);
-//        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user, null, null);
-//        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-//        // TODO
-//        //return ResponseEntity.ok(new LoginResponse(request.getUsername(), token));
-//        return "redirect:/books/allBooks";
-//
-//        try {
-//            UsernamePasswordAuthenticationToken token =new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
-//
-//            Authentication auth = authenticationManager.authenticate(token);
-//            SecurityContextHolder.getContext().setAuthentication(auth);
-//
-//            return "redirect:/books/allBooks";
-//        } catch (AuthenticationException ex) {
-//            return "redirect:/users/logIn?error=true";
-//        }
-//    }
 
     @PostMapping("/signUp")
     public String signUp(@ModelAttribute SignUp requestDto) {
@@ -177,15 +118,13 @@ public class UserController {
 
 
     @GetMapping("/profile")
-   // @PreAuthorize("hasRole('USER')")
-    public String profile(Model model){
+    public String profile(Model model, @AuthenticationPrincipal User user){
         LOGGER.info("redirect to profile page");
         model.addAttribute("user",user);
         return "profile";
     }
 
     @PostMapping("/profile")
-    @PreAuthorize("hasRole('USER')")
     public String myProfile(Model model, User user, BindingResult result) {
         if (result.hasErrors()) {
             return "profile";
@@ -210,15 +149,31 @@ public class UserController {
             return "profile";
         }
 
-        if (!service.existsByUsername(user.getUsername()) || user.getUsername().equals(this.user.getUsername())) {
-            this.user.setUsername(user.getUsername());
-            this.user.setFirstname(user.getFirstname());
-            this.user.setLastname(user.getLastname());
-            this.user.setEmail(user.getEmail());
-            this.user.setPhoneNumber(user.getPhoneNumber());
-            service.updateUser(this.user);
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (principal instanceof User currentUser) {
+            currentUser.setFirstname(user.getFirstname());
+            currentUser.setLastname(user.getLastname());
+            currentUser.setUsername(user.getUsername());
+            currentUser.setEmail(user.getEmail());
+            currentUser.setPhoneNumber(user.getPhoneNumber());
+
+            service.updateUser(currentUser);
+
+            model.addAttribute("success", "Profile updated");
         }
-        return "profile";
+
+        return "redirect:/books/allBooks";
+
+
+//        if (!service.existsByUsername(user.getUsername())) {
+//            currentUser.setUsername(user.getUsername());
+//            currentUser.setEmail(user.getEmail());
+//            currentUser.setLastname(user.getLastname());
+//            currentUser.setPhoneNumber(user.getPhoneNumber());
+//            service.updateUser(currentUser);
+//        }
+//        return "profile";
     }
 
     @GetMapping("/changeP")
@@ -229,7 +184,7 @@ public class UserController {
     }
 
     @PostMapping("/changeP")
-    public String changePassword(Model model, ChangePassword passwords, BindingResult result) {
+    public String changePassword(Model model, ChangePassword passwords, BindingResult result, @AuthenticationPrincipal User user) {
         if (result.hasErrors()) {
             return "changeP";
         }
@@ -253,7 +208,7 @@ public class UserController {
         return "redirect:/users/profile";
     }
 
-    @GetMapping("/confirmCode")
+  /*  @GetMapping("/confirmCode")
     public String confirmCode(Model model){
         model.addAttribute("error","verification code is sent to your email");
         user.setConfirmCode(RandomString.make(8));
@@ -282,7 +237,7 @@ public class UserController {
             return "changePasswordVerification";
         }
     }
-
+*/
 
 
 }
